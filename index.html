@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0F2310">
+  <title>Budget Familial</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <h1>Budget Familial</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" id="btn-export">↑ Export</button>
+        <button class="btn btn-secondary btn-sm" id="btn-import">↓ Import</button>
+      </div>
+    </div>
+    <div class="month-nav">
+      <button id="prev-month" aria-label="Mois précédent">&#8249;</button>
+      <span id="current-month-label">Juin 2026</span>
+      <button id="next-month" aria-label="Mois suivant">&#8250;</button>
+    </div>
+    <div class="header-bottom">
+      <button class="btn btn-primary btn-sm" id="btn-duplicate">Dupliquer mois précédent</button>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" id="tab-dashboard" onclick="switchPage('dashboard')">Dashboard</button>
+      <button class="tab-btn" id="tab-evolution" onclick="switchPage('evolution')">Évolution</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="page-dashboard">
+      <div id="dashboard-container"></div>
+      <div id="comptes-perso-container"></div>
+      <div id="revenus-container"></div>
+      <div id="charges-fixes-container"></div>
+      <div id="charges-variables-container"></div>
+      <div id="dettes-container"></div>
+      <div id="solde-container"></div>
+      <div id="quinzaine-container"></div>
+      <div id="enveloppes-container"></div>
+    </div>
+    <div id="page-evolution" class="hidden">
+      <div id="evolution-container"></div>
+    </div>
+  </main>
+
+  <input type="file" id="import-file-input" accept=".json" style="display:none">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://woegczyktqgbuyzymako.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_s5HcZ3JD-tkrrahcJ-3_sw_wMlHu6yH';
+    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
