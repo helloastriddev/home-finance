@@ -1520,6 +1520,34 @@ function handleImport(e) {
   e.target.value = '';
 }
 
+// ====== AUTH ======
+
+let _appBooted = false;
+
+function showLoginScreen() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app-header').classList.add('hidden');
+  document.getElementById('app-main').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-header').classList.remove('hidden');
+  document.getElementById('app-main').classList.remove('hidden');
+}
+
+async function bootApp() {
+  await migrateLocalStorageToSupabase();
+  await fetchEnveloppes();
+  setupRealtimeSync();
+  await render();
+}
+
+async function handleLogout() {
+  if (!confirm('Se déconnecter ?')) return;
+  await window.supabase.auth.signOut();
+}
+
 // ====== SYNC TEMPS RÉEL ======
 
 function setupRealtimeSync() {
@@ -1600,8 +1628,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-import').addEventListener('click', importJSON);
   document.getElementById('import-file-input').addEventListener('change', handleImport);
 
-  await migrateLocalStorageToSupabase();
-  await fetchEnveloppes();
-  setupRealtimeSync();
-  await render();
+  // Formulaire de connexion
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn      = document.getElementById('login-btn');
+    const errEl    = document.getElementById('login-error');
+
+    errEl.classList.add('hidden');
+    btn.disabled    = true;
+    btn.textContent = 'Connexion…';
+
+    const { error } = await window.supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errEl.textContent = error.message === 'Invalid login credentials'
+        ? 'Email ou mot de passe incorrect.'
+        : error.message;
+      errEl.classList.remove('hidden');
+      btn.disabled    = false;
+      btn.textContent = 'Se connecter';
+    }
+    // Si succès, onAuthStateChange prend le relais
+  });
+
+  // Écoute les changements d'état auth (login depuis formulaire, logout)
+  window.supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && !_appBooted) {
+      _appBooted = true;
+      showApp();
+      await bootApp();
+    } else if (event === 'SIGNED_OUT') {
+      _appBooted   = false;
+      _monthCache  = {};
+      _envCache    = null;
+      showLoginScreen();
+    }
+  });
+
+  // Vérifie s'il y a déjà une session active (rechargement de page)
+  const { data: { session } } = await window.supabase.auth.getSession();
+  if (session) {
+    _appBooted = true;
+    showApp();
+    await bootApp();
+  } else {
+    showLoginScreen();
+  }
 });

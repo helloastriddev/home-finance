@@ -11,12 +11,33 @@
 </head>
 <body>
 
-  <header>
+  <div id="login-screen" class="hidden">
+    <div class="login-card">
+      <div class="login-logo">💰</div>
+      <h2 class="login-title">Budget Familial</h2>
+      <p class="login-sub">Connectez-vous pour accéder à votre budget</p>
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="email" required>
+        </div>
+        <div class="login-field">
+          <label for="login-password">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="login-error hidden"></div>
+        <button type="submit" class="btn btn-primary login-submit" id="login-btn">Se connecter</button>
+      </form>
+    </div>
+  </div>
+
+  <header id="app-header" class="hidden">
     <div class="header-top">
       <h1>Budget Familial</h1>
       <div class="header-actions">
         <button class="btn btn-secondary btn-sm" id="btn-export">↑ Export</button>
         <button class="btn btn-secondary btn-sm" id="btn-import">↓ Import</button>
+        <button class="btn btn-secondary btn-sm" id="btn-logout" onclick="handleLogout()">⎋ Déco</button>
       </div>
     </div>
     <div class="month-nav">
@@ -33,7 +54,7 @@
     </nav>
   </header>
 
-  <main>
+  <main id="app-main" class="hidden">
     <div id="page-dashboard">
       <div id="dashboard-container"></div>
       <div id="comptes-perso-container"></div>
